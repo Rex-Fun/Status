@@ -1,8 +1,8 @@
-local Limbo = {}
+local Rex = {}
 local LIB_VERSION = "2.0.7"
-Limbo.Version = LIB_VERSION
+Rex.Version = LIB_VERSION
 
-Limbo._resetCallbacks = {}
+Rex._resetCallbacks = {}
 
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -14,7 +14,7 @@ local HttpService = game:GetService("HttpService")
 local TextService = game:GetService("TextService")
 local RunService = game:GetService("RunService")
 
-local ConfigFolder = "LimboConfig"
+local ConfigFolder = "RexConfig"
 
 local function CircleClick(Button, X, Y)
     spawn(
@@ -228,7 +228,7 @@ local LucideIcons = nil
 
 local function GetLucideIcons()
     if LucideIcons then return LucideIcons end
-    local cachePath = "LimboHUB/assets/.lucide_icons.lua"
+    local cachePath = "RexHUB/assets/.lucide_icons.lua"
     pcall(function()
         if isfile and isfile(cachePath) then
             local src = readfile(cachePath)
@@ -242,8 +242,8 @@ local function GetLucideIcons()
         pcall(function()
             local src = game:HttpGet(LUCIDE_URL)
             if src and #src > 1000 then
-                if makefolder and isfolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
-                if makefolder and isfolder and not isfolder("LimboHUB/assets") then makefolder("LimboHUB/assets") end
+                if makefolder and isfolder and not isfolder("RexHUB") then makefolder("RexHUB") end
+                if makefolder and isfolder and not isfolder("RexHUB/assets") then makefolder("RexHUB/assets") end
                 if writefile then writefile(cachePath, src) end
                 local fn = loadstring(src)
                 if fn then LucideIcons = fn() end
@@ -285,9 +285,9 @@ local function ResolveIcon(icon)
         local ok, customAsset = pcall(function()
             local cleanName = icon:gsub("[^%w%.%-_]", "_")
             if #cleanName > 64 then cleanName = string.sub(cleanName, -60) end
-            local path = "LimboHUB/assets/." .. cleanName
-            if makefolder and isfolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
-            if makefolder and isfolder and not isfolder("LimboHUB/assets") then makefolder("LimboHUB/assets") end
+            local path = "RexHUB/assets/." .. cleanName
+            if makefolder and isfolder and not isfolder("RexHUB") then makefolder("RexHUB") end
+            if makefolder and isfolder and not isfolder("RexHUB/assets") then makefolder("RexHUB/assets") end
             if isfile and not isfile(path) then
                 local req = (syn and syn.request) or (http and http.request) or request or http_request
                 local body = (game.HttpGet and game:HttpGet(icon)) or (req and req({Url = icon, Method = "GET"}).Body)
@@ -327,7 +327,7 @@ local ConfigSystem = {
     CurrentConfig = nil,
     Configs = {},
     ThemeColors = {
-        ["Limbo"] = Color3.fromRGB(150, 150, 170),
+        ["Rex"] = Color3.fromRGB(150, 150, 170),
         ["Darker"] = Color3.fromRGB(150, 150, 170),
         ["Purple"] = Color3.fromHex("#A000FF"),
         ["Magenta"] = Color3.fromHex("#FF00E0"),
@@ -1007,7 +1007,7 @@ local function setupCloseModal(closeBtn, main, screenGui)
     cc.Parent = btnCancel
     btnCancel.Activated:Connect(function() overlay.Visible = false end)
     btnYes.Activated:Connect(function()
-        for _, fn in pairs(Limbo._resetCallbacks) do
+        for _, fn in pairs(Rex._resetCallbacks) do
             pcall(fn)
         end
         task.wait(0.1)
@@ -1025,7 +1025,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
         return
     end
 
-    local keyFile = "LimboHUB/saved_key.txt"
+    local keyFile = "RexHUB/saved_key.txt"
     if ksConfig.SaveKey and isfile and isfile(keyFile) then
         local saved = readfile(keyFile):gsub("%s+", "")
         if saved ~= "" and ksConfig.KeyValidator and ksConfig.KeyValidator(saved) then
@@ -1087,7 +1087,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
     Logo.Parent = TopRow
 
     local Title = Instance.new("TextLabel")
-    Title.Text = ksConfig.Title or "Limbo Hub Access"
+    Title.Text = ksConfig.Title or "Rex Hub Access"
     Title.Font = Enum.Font.GothamBold
     Title.TextSize = 14
     Title.TextColor3 = Color3.fromRGB(240, 240, 240)
@@ -1097,7 +1097,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
     Title.Parent = TopRow
 
     local Note = Instance.new("TextLabel")
-    Note.Text = ksConfig.Note or "Enter a valid key to access Limbo Hub."
+    Note.Text = ksConfig.Note or "Enter a valid key to access Rex Hub."
     Note.Font = Enum.Font.Gotham
     Note.TextSize = 11
     Note.TextColor3 = Color3.fromRGB(160, 160, 170)
@@ -1162,7 +1162,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
         if copy and ksConfig.URL then
             copy(ksConfig.URL)
             MakeNotify({
-                Title = "Limbo HUB",
+                Title = "Rex HUB",
                 Content = "Key URL copied to clipboard!",
                 Delay = 3
             })
@@ -1180,7 +1180,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
             local valid = ksConfig.KeyValidator and ksConfig.KeyValidator(key)
             if valid then
                 if ksConfig.SaveKey and writefile then
-                    if makefolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
+                    if makefolder and not isfolder("RexHUB") then makefolder("RexHUB") end
                     writefile(keyFile, key)
                 end
                 KeyHolder:Destroy()
@@ -1194,10 +1194,10 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
     end)
 end
 
-function Limbo:CreateWindow(config)
+function Rex:CreateWindow(config)
     config = config or {}
-    local Title = config.Title or "Limbo UI"
-    local Theme = config.Theme or "Limbo"
+    local Title = config.Title or "Rex UI"
+    local Theme = config.Theme or "Rex"
     local Size = config.Size or UDim2.fromOffset(560, 340)
     local Center = config.Center ~= false
     local Draggable = config.Draggable ~= false
@@ -1210,7 +1210,7 @@ function Limbo:CreateWindow(config)
     if config.ConfigFolder then
         ConfigFolder = config.ConfigFolder
     else
-        ConfigFolder = "Limbo" .. gameClean .. "/Config"
+        ConfigFolder = "Rex" .. gameClean .. "/Config"
     end
     local MinimizeButton = config.MinimizeButton or false
     local MinimizeButtonImage = config.MinimizeButton_Image or "rbxassetid://16932740082"
@@ -1232,7 +1232,7 @@ function Limbo:CreateWindow(config)
 
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.Name = "LimboUI"
+    ScreenGui.Name = "RexUI"
     ScreenGui.Parent = (gethui and gethui()) or CoreGui
 
     local DropShadowHolder = Instance.new("Frame")
@@ -1366,9 +1366,9 @@ function Limbo:CreateWindow(config)
             WatermarkAsset = Watermark
         elseif Watermark:match("^https?://") then
             pcall(function()
-                local assetPath = "LimboHUB/assets/.limbo_watermark.png"
-                if makefolder and isfolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
-                if makefolder and isfolder and not isfolder("LimboHUB/assets") then makefolder("LimboHUB/assets") end
+                local assetPath = "RexHUB/assets/.Rex_watermark.png"
+                if makefolder and isfolder and not isfolder("RexHUB") then makefolder("RexHUB") end
+                if makefolder and isfolder and not isfolder("RexHUB/assets") then makefolder("RexHUB/assets") end
                 if isfile and not isfile(assetPath) then
                     local reqFn = (syn and syn.request) or (http and http.request) or request or http_request
                     local body = (game.HttpGet and game:HttpGet(Watermark)) or (reqFn and reqFn({Url = Watermark, Method = "GET"}).Body)
@@ -2306,7 +2306,7 @@ function Limbo:CreateWindow(config)
 
     if enableToggleBtn then
         ToggleBtn = Instance.new("Frame")
-        ToggleBtn.Name = "LimboToggleButton"
+        ToggleBtn.Name = "RexToggleButton"
         ToggleBtn.BackgroundColor3 = Color3.fromHex("#141414")
         ToggleBtn.BackgroundTransparency = 0
         ToggleBtn.BorderSizePixel = 0
@@ -2735,7 +2735,7 @@ function Limbo:CreateWindow(config)
 
         ButtonButton.Activated:Connect(
             function()
-                if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
+                if Rex._activeDropdownClose then Rex._activeDropdownClose() end
                 CircleClick(ButtonButton, Mouse.X, Mouse.Y)
                 if callback then
                     callback()
@@ -2949,7 +2949,7 @@ function Limbo:CreateWindow(config)
 
         if elementId then
             AllElements[elementId] = toggleFunc
-            table.insert(Limbo._resetCallbacks, function() toggleFunc.Set(false) end)
+            table.insert(Rex._resetCallbacks, function() toggleFunc.Set(false) end)
         end
 
         return toggleFunc
@@ -3334,19 +3334,19 @@ function Limbo:CreateWindow(config)
         local function ToggleDropdown()
             dropdownData.Open = not dropdownData.Open
             if dropdownData.Open then
-                if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
+                if Rex._activeDropdownClose then Rex._activeDropdownClose() end
 
                 DropdownList.Position = UDim2.new(0.46, 0, 0, 4)
                 DropdownList.Size = UDim2.new(0.54, -6, 1, -8)
                 DropdownList.ZIndex = 50
                 DropdownList.Visible = true
 
-                Limbo._activeDropdownClose = function()
+                Rex._activeDropdownClose = function()
                     if not dropdownData.Open then return end
                     dropdownData.Open = false
                     ResetSearch()
                     DropdownList.Visible = false
-                    Limbo._activeDropdownClose = nil
+                    Rex._activeDropdownClose = nil
                     if csConn then csConn:Disconnect(); csConn = nil end
                     local dOvr = ContentFrame:FindFirstChild("DropOverlay")
                     if dOvr then dOvr:Destroy() end
@@ -3362,11 +3362,11 @@ function Limbo:CreateWindow(config)
                 overlay.AutoButtonColor = false
                 overlay.Parent = ContentFrame
                 csConn = overlay.Activated:Connect(function()
-                    if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
+                    if Rex._activeDropdownClose then Rex._activeDropdownClose() end
                 end)
             else
-                if Limbo._activeDropdownClose then
-                    Limbo._activeDropdownClose()
+                if Rex._activeDropdownClose then
+                    Rex._activeDropdownClose()
                 end
             end
         end
@@ -4530,7 +4530,7 @@ function Limbo:CreateWindow(config)
 
         KeybindButton.Activated:Connect(
             function()
-                if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
+                if Rex._activeDropdownClose then Rex._activeDropdownClose() end
                 CircleClick(KeybindButton, Mouse.X, Mouse.Y)
 
                 if keybindData.Listening then
@@ -4670,7 +4670,7 @@ function Limbo:CreateWindow(config)
 
             if cfg.Callback then
                 Btn.Activated:Connect(function()
-                    if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
+                    if Rex._activeDropdownClose then Rex._activeDropdownClose() end
                     CircleClick(Btn, Mouse.X, Mouse.Y)
                     cfg.Callback()
                 end)
@@ -4750,7 +4750,7 @@ function Limbo:CreateWindow(config)
 
         local SL = Instance.new("TextLabel")
         SL.Font = Enum.Font.GothamBold
-        SL.Text = "Welcome to Limbo Hub"
+        SL.Text = "Welcome to Rex Hub"
         SL.TextColor3 = Color3.fromRGB(255, 255, 255)
         SL.TextTransparency = 0.6
         SL.TextSize = 12
@@ -4829,7 +4829,7 @@ function Limbo:CreateWindow(config)
         end
 
         HeaderBtn.Activated:Connect(function()
-            if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
+            if Rex._activeDropdownClose then Rex._activeDropdownClose() end
             isOpen = not isOpen
             updateSize()
         end)
@@ -4959,7 +4959,7 @@ function Limbo:CreateWindow(config)
         ContainerPad.Parent = TabContentContainer
 
         TabContents[tabName] = TabContentContainer
-        TabContentContainer:SetAttribute("LimboTabName", tabName)
+        TabContentContainer:SetAttribute("RexTabName", tabName)
 
         local function SwitchToTab()
             for name, container in pairs(TabContents) do
@@ -4987,7 +4987,7 @@ function Limbo:CreateWindow(config)
 
         TabButton.Activated:Connect(
             function()
-                if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
+                if Rex._activeDropdownClose then Rex._activeDropdownClose() end
                 CircleClick(TabButton, Mouse.X, Mouse.Y)
                 SwitchToTab()
             end
@@ -5055,14 +5055,14 @@ function Limbo:CreateWindow(config)
             end)
             if not ok then
                 MakeNotify({
-                    Title = "Limbo HUB",
+                    Title = "Rex HUB",
                     Content = "Server hop failed: " .. tostring(err),
                     Delay = 4,
                 })
             end
         else
             MakeNotify({
-                Title = "Limbo HUB",
+                Title = "Rex HUB",
                 Content = lookupError and "Could not fetch public servers." or "No available public server was found.",
                 Delay = 4,
             })
@@ -5676,8 +5676,8 @@ function Limbo:CreateWindow(config)
     return Window
 end
 
-function Limbo:Notify(config)
+function Rex:Notify(config)
     MakeNotify(config)
 end
 
-return Limbo
+return Rex
