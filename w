@@ -1792,7 +1792,7 @@ function Limbo:CreateWindow(config)
     SearchResults.Name = "SearchResults"
     SearchResults.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
     SearchResults.BorderSizePixel = 0
-    SearchResults.Position = UDim2.new(0, 9, 0, 75)
+    SearchResults.Position = UDim2.new(0, 9, 0, 6)
     SearchResults.Size = UDim2.new(0, 120, 0, 0)
     SearchResults.ScrollBarThickness = 2
     SearchResults.ScrollBarImageColor3 = Color3.fromRGB(150, 150, 170)
