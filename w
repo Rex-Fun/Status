@@ -4493,24 +4493,6 @@ function Limbo:CreateWindow(config)
 
 
 
-        -- register in SearchSections for live search
-        local rawName = (tabContainer and tabContainer.Name) or ""
-        local tabName = rawName ~= "" and rawName:gsub("Content$", "") or nil
-        if tabName and title and title ~= "" then
-            local secTitle = (title or ""):gsub("^%s+", "")
-            table.insert(SearchSections, {
-                title   = secTitle,
-                tabName = tabName,
-                secFrame = SectionFrame,
-                openFn  = function()
-                    if not isOpen then
-                        isOpen = true
-                        updateSize()
-                    end
-                end,
-            })
-        end
-
         updateSize()
         return InnerContainer
     end
