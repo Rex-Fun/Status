@@ -1,8 +1,8 @@
-local Rex = {}
+local Limbo = {}
 local LIB_VERSION = "2.0.7"
-Rex.Version = LIB_VERSION
+Limbo.Version = LIB_VERSION
 
-Rex._resetCallbacks = {}
+Limbo._resetCallbacks = {}
 
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -14,7 +14,7 @@ local HttpService = game:GetService("HttpService")
 local TextService = game:GetService("TextService")
 local RunService = game:GetService("RunService")
 
-local ConfigFolder = "RexConfig"
+local ConfigFolder = "LimboConfig"
 
 local function CircleClick(Button, X, Y)
     spawn(
@@ -228,7 +228,7 @@ local LucideIcons = nil
 
 local function GetLucideIcons()
     if LucideIcons then return LucideIcons end
-    local cachePath = "RexHUB/assets/.lucide_icons.lua"
+    local cachePath = "LimboHUB/assets/.lucide_icons.lua"
     pcall(function()
         if isfile and isfile(cachePath) then
             local src = readfile(cachePath)
@@ -242,8 +242,8 @@ local function GetLucideIcons()
         pcall(function()
             local src = game:HttpGet(LUCIDE_URL)
             if src and #src > 1000 then
-                if makefolder and isfolder and not isfolder("RexHUB") then makefolder("RexHUB") end
-                if makefolder and isfolder and not isfolder("RexHUB/assets") then makefolder("RexHUB/assets") end
+                if makefolder and isfolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
+                if makefolder and isfolder and not isfolder("LimboHUB/assets") then makefolder("LimboHUB/assets") end
                 if writefile then writefile(cachePath, src) end
                 local fn = loadstring(src)
                 if fn then LucideIcons = fn() end
@@ -285,9 +285,9 @@ local function ResolveIcon(icon)
         local ok, customAsset = pcall(function()
             local cleanName = icon:gsub("[^%w%.%-_]", "_")
             if #cleanName > 64 then cleanName = string.sub(cleanName, -60) end
-            local path = "RexHUB/assets/." .. cleanName
-            if makefolder and isfolder and not isfolder("RexHUB") then makefolder("RexHUB") end
-            if makefolder and isfolder and not isfolder("RexHUB/assets") then makefolder("RexHUB/assets") end
+            local path = "LimboHUB/assets/." .. cleanName
+            if makefolder and isfolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
+            if makefolder and isfolder and not isfolder("LimboHUB/assets") then makefolder("LimboHUB/assets") end
             if isfile and not isfile(path) then
                 local req = (syn and syn.request) or (http and http.request) or request or http_request
                 local body = (game.HttpGet and game:HttpGet(icon)) or (req and req({Url = icon, Method = "GET"}).Body)
@@ -327,7 +327,7 @@ local ConfigSystem = {
     CurrentConfig = nil,
     Configs = {},
     ThemeColors = {
-        ["Rex"] = Color3.fromRGB(150, 150, 170),
+        ["Limbo"] = Color3.fromRGB(150, 150, 170),
         ["Darker"] = Color3.fromRGB(150, 150, 170),
         ["Purple"] = Color3.fromHex("#A000FF"),
         ["Magenta"] = Color3.fromHex("#FF00E0"),
@@ -783,7 +783,7 @@ local function MakeNotify(NotifyConfig)
             TopLayout.Padding = UDim.new(0, 6)
             TopLayout.Parent = Top
 
-            local notifyIconUrl = ResolveIcon(NotifyConfig.Icon or "rbxassetid://130490621930875")
+            local notifyIconUrl = ResolveIcon(NotifyConfig.Icon or "rbxassetid://97957114633547")
             if notifyIconUrl then
                 local NIcon = Instance.new("ImageLabel")
                 NIcon.Image = notifyIconUrl
@@ -1007,7 +1007,7 @@ local function setupCloseModal(closeBtn, main, screenGui)
     cc.Parent = btnCancel
     btnCancel.Activated:Connect(function() overlay.Visible = false end)
     btnYes.Activated:Connect(function()
-        for _, fn in pairs(Rex._resetCallbacks) do
+        for _, fn in pairs(Limbo._resetCallbacks) do
             pcall(fn)
         end
         task.wait(0.1)
@@ -1025,7 +1025,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
         return
     end
 
-    local keyFile = "RexHUB/saved_key.txt"
+    local keyFile = "LimboHUB/saved_key.txt"
     if ksConfig.SaveKey and isfile and isfile(keyFile) then
         local saved = readfile(keyFile):gsub("%s+", "")
         if saved ~= "" and ksConfig.KeyValidator and ksConfig.KeyValidator(saved) then
@@ -1081,13 +1081,13 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
     TopLayout.Parent = TopRow
 
     local Logo = Instance.new("ImageLabel")
-    Logo.Image = "rbxassetid://130490621930875"
+    Logo.Image = "rbxassetid://97957114633547"
     Logo.Size = UDim2.fromOffset(20, 20)
     Logo.BackgroundTransparency = 1
     Logo.Parent = TopRow
 
     local Title = Instance.new("TextLabel")
-    Title.Text = ksConfig.Title or "Rex Hub Access"
+    Title.Text = ksConfig.Title or "Limbo Hub Access"
     Title.Font = Enum.Font.GothamBold
     Title.TextSize = 14
     Title.TextColor3 = Color3.fromRGB(240, 240, 240)
@@ -1097,7 +1097,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
     Title.Parent = TopRow
 
     local Note = Instance.new("TextLabel")
-    Note.Text = ksConfig.Note or "Enter a valid key to access Rex Hub."
+    Note.Text = ksConfig.Note or "Enter a valid key to access Limbo Hub."
     Note.Font = Enum.Font.Gotham
     Note.TextSize = 11
     Note.TextColor3 = Color3.fromRGB(160, 160, 170)
@@ -1162,7 +1162,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
         if copy and ksConfig.URL then
             copy(ksConfig.URL)
             MakeNotify({
-                Title = "Rex HUB",
+                Title = "Limbo HUB",
                 Content = "Key URL copied to clipboard!",
                 Delay = 3
             })
@@ -1180,7 +1180,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
             local valid = ksConfig.KeyValidator and ksConfig.KeyValidator(key)
             if valid then
                 if ksConfig.SaveKey and writefile then
-                    if makefolder and not isfolder("RexHUB") then makefolder("RexHUB") end
+                    if makefolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
                     writefile(keyFile, key)
                 end
                 KeyHolder:Destroy()
@@ -1194,10 +1194,10 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
     end)
 end
 
-function Rex:CreateWindow(config)
+function Limbo:CreateWindow(config)
     config = config or {}
-    local Title = config.Title or "Rex UI"
-    local Theme = config.Theme or "Rex"
+    local Title = config.Title or "Limbo UI"
+    local Theme = config.Theme or "Limbo"
     local Size = config.Size or UDim2.fromOffset(560, 340)
     local Center = config.Center ~= false
     local Draggable = config.Draggable ~= false
@@ -1210,12 +1210,12 @@ function Rex:CreateWindow(config)
     if config.ConfigFolder then
         ConfigFolder = config.ConfigFolder
     else
-        ConfigFolder = "Rex" .. gameClean .. "/Config"
+        ConfigFolder = "Limbo" .. gameClean .. "/Config"
     end
     local MinimizeButton = config.MinimizeButton or false
     local MinimizeButtonImage = config.MinimizeButton_Image or "rbxassetid://16932740082"
     local Badges = config.Badges or {}
-    local Icon = ResolveIcon(config.Icon or "rbxassetid://130490621930875")
+    local Icon = ResolveIcon(config.Icon or "rbxassetid://97957114633547")
     local TitleImage = config.TitleImage or ""
     local Version = config.Version or ("v" .. LIB_VERSION)
     local ShowExecutor = config.ShowExecutor ~= false
@@ -1232,7 +1232,7 @@ function Rex:CreateWindow(config)
 
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.Name = "RexUI"
+    ScreenGui.Name = "LimboUI"
     ScreenGui.Parent = (gethui and gethui()) or CoreGui
 
     local DropShadowHolder = Instance.new("Frame")
@@ -1325,7 +1325,7 @@ function Rex:CreateWindow(config)
     -- No UIStroke on Main squircle image to avoid rectangular black outer corners
 
     -- Background image (customizable, shown only on selected theme)
-    local BgImageId    = config.BackgroundImage       or "rbxassetid://130490621930875"
+    local BgImageId    = config.BackgroundImage       or "rbxassetid://97957114633547"
     local BgImageTheme = config.BackgroundImage_Theme or "Darker"
 
     local ImageWrapper = Instance.new("Frame")
@@ -1366,9 +1366,9 @@ function Rex:CreateWindow(config)
             WatermarkAsset = Watermark
         elseif Watermark:match("^https?://") then
             pcall(function()
-                local assetPath = "RexHUB/assets/.Rex_watermark.png"
-                if makefolder and isfolder and not isfolder("RexHUB") then makefolder("RexHUB") end
-                if makefolder and isfolder and not isfolder("RexHUB/assets") then makefolder("RexHUB/assets") end
+                local assetPath = "LimboHUB/assets/.limbo_watermark.png"
+                if makefolder and isfolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
+                if makefolder and isfolder and not isfolder("LimboHUB/assets") then makefolder("LimboHUB/assets") end
                 if isfile and not isfile(assetPath) then
                     local reqFn = (syn and syn.request) or (http and http.request) or request or http_request
                     local body = (game.HttpGet and game:HttpGet(Watermark)) or (reqFn and reqFn({Url = Watermark, Method = "GET"}).Body)
@@ -1743,6 +1743,351 @@ function Rex:CreateWindow(config)
     TabTopPadding.PaddingTop = UDim.new(0, 4)
     TabTopPadding.Parent = TabScroll
 
+    -- Search bar
+    local SearchBar = Instance.new("Frame")
+    SearchBar.Name = "SearchBar"
+    SearchBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SearchBar.BackgroundTransparency = 0.93
+    SearchBar.BorderSizePixel = 0
+    SearchBar.Position = UDim2.new(0, 0, 0, 6)
+    SearchBar.Size = UDim2.new(1, 0, 0, 30)
+    SearchBar.ZIndex = 20
+    SearchBar.Active = true
+    SearchBar.Parent = TabFrame
+
+    local SearchBarCorner = Instance.new("UICorner")
+    SearchBarCorner.CornerRadius = UDim.new(0, 4)
+    SearchBarCorner.Parent = SearchBar
+
+    local SearchIcon = Instance.new("ImageLabel")
+    SearchIcon.Image = ResolveIcon("scan-qr-code") or "rbxassetid://105409149549927"
+    SearchIcon.ImageColor3 = Color3.fromHex("#B5B5B5")
+    SearchIcon.BackgroundTransparency = 1
+    SearchIcon.Position = UDim2.new(0, 8, 0.5, 0)
+    SearchIcon.AnchorPoint = Vector2.new(0, 0.5)
+    SearchIcon.Size = UDim2.new(0, 14, 0, 14)
+    SearchIcon.ZIndex = 22
+    SearchIcon.Parent = SearchBar
+
+    local SearchTextBox = Instance.new("TextBox")
+    SearchTextBox.Font = Enum.Font.Gotham
+    SearchTextBox.PlaceholderText = "Search Features..."
+    SearchTextBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 110)
+    SearchTextBox.Text = ""
+    SearchTextBox.TextColor3 = Color3.fromRGB(230, 230, 230)
+    SearchTextBox.TextSize = 11
+    SearchTextBox.TextXAlignment = Enum.TextXAlignment.Left
+    SearchTextBox.BackgroundTransparency = 1
+    SearchTextBox.BorderSizePixel = 0
+    SearchTextBox.Position = UDim2.new(0, 28, 0, 0)
+    SearchTextBox.Size = UDim2.new(1, -32, 1, 0)
+    SearchTextBox.ClearTextOnFocus = false
+    SearchTextBox.ZIndex = 21
+    SearchTextBox.Parent = SearchBar
+
+    local SearchResults = Instance.new("ScrollingFrame")
+    local SearchResultsLayout = nil  -- forward, assigned below
+    SearchResults.Name = "SearchResults"
+    SearchResults.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    SearchResults.BorderSizePixel = 0
+    SearchResults.Position = UDim2.new(0, 9, 0, 75)
+    SearchResults.Size = UDim2.new(0, 120, 0, 0)
+    SearchResults.ScrollBarThickness = 2
+    SearchResults.ScrollBarImageColor3 = Color3.fromRGB(150, 150, 170)
+    SearchResults.ClipsDescendants = true
+    SearchResults.ZIndex = 50
+    SearchResults.Visible = false
+    SearchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
+    SearchResults.Parent = Main
+
+    local SearchResultsCorner = Instance.new("UICorner")
+    SearchResultsCorner.CornerRadius = UDim.new(0, 4)
+    SearchResultsCorner.Parent = SearchResults
+
+    SearchResultsLayout = Instance.new("UIListLayout")
+    SearchResultsLayout.Padding = UDim.new(0, 2)
+    SearchResultsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    SearchResultsLayout.Parent = SearchResults
+
+    SearchResultsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        SearchResults.CanvasSize = UDim2.new(0, 0, 0, SearchResultsLayout.AbsoluteContentSize.Y + 4)
+    end)
+
+    local searchResultsOpen = false
+    local NoResultsLabel = nil
+    local SearchSections = {}
+    local TabContents = {}
+    local TabSwitchFns = {}
+    local ContentScroll = nil
+    -- helper: sum Size.Y.Offset of children above stopAt (reliable, no render needed)
+    local function sumChildH(container, stopAt)
+        local y = 0
+        for _, ch in ipairs(container:GetChildren()) do
+            if ch == stopAt then break end
+            if ch:IsA("Frame") then y = y + ch.Size.Y.Offset + 8 end
+        end
+        return y
+    end
+
+    local function flashElem(elem)
+        task.spawn(function()
+            local s = Instance.new("UIStroke")
+            s.Color = Color3.fromRGB(180, 180, 210)
+            s.Thickness = 2.5
+            s.Transparency = 0
+            s.Parent = elem
+            task.wait(0.8)
+            if s and s.Parent then s:Destroy() end
+        end)
+    end
+
+    local function closeSearchResults()
+        searchResultsOpen = false
+        SearchResults.Visible = false
+        for _, child in ipairs(SearchResults:GetChildren()) do
+            if child:IsA("TextButton") then child:Destroy() end
+        end
+        if NoResultsLabel then NoResultsLabel.Visible = false end
+    end
+
+    local function buildSearchResults(query)
+        if not NoResultsLabel then return end
+        -- fresh destroy old buttons
+        for _, child in ipairs(SearchResults:GetChildren()) do
+            if child:IsA("TextButton") then child:Destroy() end
+        end
+        NoResultsLabel.Visible = false
+
+        if query == "" then
+            closeSearchResults()
+            return
+        end
+
+        local q = string.lower(query)
+        local found = 0
+
+        for _, sec in ipairs(SearchSections) do
+            pcall(function()
+                local inner = sec.secFrame and sec.secFrame:FindFirstChild("InnerContainer")
+                if not inner then return end
+                for _, elem in ipairs(inner:GetChildren()) do
+                    for _, lname in ipairs({"ToggleTitle","ButtonTitle","InputTitle","DropdownTitle","SliderTitle","ParagraphTitle"}) do
+                        local lbl = elem:FindFirstChild(lname)
+                        if lbl and lbl.Text and lbl.Text ~= "" then
+                            if string.find(string.lower(lbl.Text), q, 1, true) then
+                                found = found + 1
+                                local displayText = lbl.Text
+                                local subtitleText = (sec.tabName or "") .. " \xE2\x80\xA2 " .. (sec.title or "")
+                                local capSec = sec
+                                local capElem = elem
+
+                                local Item = Instance.new("TextButton", SearchResults)
+                                Item.Font = Enum.Font.GothamBold
+                                Item.Text = ""
+                                Item.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                                Item.BackgroundTransparency = 0.92
+                                Item.BorderSizePixel = 0
+                                Item.Size = UDim2.new(1, 0, 0, 40)
+                                Item.ZIndex = 51
+                                Item.AutoButtonColor = true
+                                Item.Visible = true
+                                Instance.new("UICorner", Item).CornerRadius = UDim.new(0, 3)
+
+                                -- pill indicator left
+                                local Pill = Instance.new("Frame", Item)
+                                Pill.BackgroundColor3 = Color3.fromRGB(150, 150, 170)
+                                Pill.BorderSizePixel = 0
+                                Pill.Position = UDim2.new(0, 0, 0.1, 0)
+                                Pill.Size = UDim2.new(0, 2, 0.8, 0)
+                                Pill.ZIndex = 52
+                                Instance.new("UICorner", Pill).CornerRadius = UDim.new(1, 0)
+
+                                -- main text
+                                local MainLabel = Instance.new("TextLabel", Item)
+                                MainLabel.Font = Enum.Font.GothamBold
+                                MainLabel.Text = displayText
+                                MainLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+                                MainLabel.TextSize = 13
+                                MainLabel.TextXAlignment = Enum.TextXAlignment.Left
+                                MainLabel.TextTruncate = Enum.TextTruncate.AtEnd
+                                MainLabel.BackgroundTransparency = 1
+                                MainLabel.BorderSizePixel = 0
+                                MainLabel.Position = UDim2.new(0, 8, 0, 4)
+                                MainLabel.Size = UDim2.new(1, -10, 0, 16)
+                                MainLabel.ZIndex = 52
+
+                                -- subtitle
+                                local SubLabel = Instance.new("TextLabel", Item)
+                                SubLabel.Font = Enum.Font.Gotham
+                                SubLabel.Text = subtitleText
+                                SubLabel.TextColor3 = Color3.fromRGB(120, 120, 140)
+                                SubLabel.TextSize = 9
+                                SubLabel.TextXAlignment = Enum.TextXAlignment.Left
+                                SubLabel.TextTruncate = Enum.TextTruncate.AtEnd
+                                SubLabel.BackgroundTransparency = 1
+                                SubLabel.BorderSizePixel = 0
+                                SubLabel.Position = UDim2.new(0, 8, 0, 22)
+                                SubLabel.Size = UDim2.new(1, -10, 0, 12)
+                                SubLabel.ZIndex = 52
+
+                                Item.MouseButton1Click:Connect(function()
+                                    task.spawn(function()
+                                        local sf = TabSwitchFns[capSec.tabName]
+                                        if sf then pcall(sf) end
+                                        pcall(capSec.openFn)
+                                        task.wait(0.2)
+                                        -- reliable scroll: sum child heights
+                                        local cont = TabContents[capSec.tabName]
+                                        local inner3 = capSec.secFrame and capSec.secFrame:FindFirstChild("InnerContainer")
+                                        local secOffset = cont and sumChildH(cont, capSec.secFrame) or 0
+                                        local elemOffset = inner3 and sumChildH(inner3, capElem) or 0
+                                        local scrollTo = secOffset + 34 + elemOffset
+                                        ContentScroll.CanvasPosition = Vector2.new(0, scrollTo)
+                                        flashElem(capElem)
+                                    end)
+                                    SearchTextBox.Text = ""
+                                    closeSearchResults()
+                                end)
+                            end
+                            break
+                        end
+                    end
+                end
+            end)
+        end
+
+        -- second pass: scan elements directly in tabs (outside collapsibles)
+        for tabName, container in pairs(TabContents or {}) do
+            for _, elem in ipairs(container:GetChildren()) do
+                if elem.Name ~= "Collapsible" then
+                    for _, lname in ipairs({"ToggleTitle","ButtonTitle","InputTitle","DropdownTitle","SliderTitle","ParagraphTitle"}) do
+                        local lbl = elem:FindFirstChild(lname)
+                        if lbl and lbl.Text and lbl.Text ~= "" then
+                            if string.find(string.lower(lbl.Text), q, 1, true) then
+                                found = found + 1
+                                local displayText = lbl.Text
+                                local subtitleText = tabName .. " \xE2\x80\xA2 " .. tabName
+                                local capTab = tabName
+                                local capElem = elem
+
+                                local Item = Instance.new("TextButton", SearchResults)
+                                Item.Font = Enum.Font.GothamBold
+                                Item.Text = ""
+                                Item.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                                Item.BackgroundTransparency = 0.92
+                                Item.BorderSizePixel = 0
+                                Item.Size = UDim2.new(1, 0, 0, 40)
+                                Item.ZIndex = 51
+                                Item.AutoButtonColor = true
+                                Item.Visible = true
+                                Instance.new("UICorner", Item).CornerRadius = UDim.new(0, 3)
+                                local Pill2 = Instance.new("Frame", Item)
+                                Pill2.BackgroundColor3 = Color3.fromRGB(150, 150, 170)
+                                Pill2.BorderSizePixel = 0
+                                Pill2.Position = UDim2.new(0, 0, 0.1, 0)
+                                Pill2.Size = UDim2.new(0, 2, 0.8, 0)
+                                Pill2.ZIndex = 52
+                                Instance.new("UICorner", Pill2).CornerRadius = UDim.new(1, 0)
+                                local ML2 = Instance.new("TextLabel", Item)
+                                ML2.Font = Enum.Font.GothamBold
+                                ML2.Text = displayText
+                                ML2.TextColor3 = Color3.fromRGB(220, 220, 220)
+                                ML2.TextSize = 13
+                                ML2.TextXAlignment = Enum.TextXAlignment.Left
+                                ML2.TextTruncate = Enum.TextTruncate.AtEnd
+                                ML2.BackgroundTransparency = 1
+                                ML2.BorderSizePixel = 0
+                                ML2.Position = UDim2.new(0, 8, 0, 4)
+                                ML2.Size = UDim2.new(1, -10, 0, 16)
+                                ML2.ZIndex = 52
+                                local SL2 = Instance.new("TextLabel", Item)
+                                SL2.Font = Enum.Font.Gotham
+                                SL2.Text = subtitleText
+                                SL2.TextColor3 = Color3.fromRGB(120, 120, 140)
+                                SL2.TextSize = 9
+                                SL2.TextXAlignment = Enum.TextXAlignment.Left
+                                SL2.TextTruncate = Enum.TextTruncate.AtEnd
+                                SL2.BackgroundTransparency = 1
+                                SL2.BorderSizePixel = 0
+                                SL2.Position = UDim2.new(0, 8, 0, 22)
+                                SL2.Size = UDim2.new(1, -10, 0, 12)
+                                SL2.ZIndex = 52
+                                Item.MouseButton1Click:Connect(function()
+                                    task.spawn(function()
+                                        local sf = TabSwitchFns[capTab]
+                                        if sf then pcall(sf) end
+                                        task.wait(0.2)
+                                        local cont = TabContents[capTab]
+                                        local scrollTo = cont and sumChildH(cont, capElem) or 0
+                                        ContentScroll.CanvasPosition = Vector2.new(0, scrollTo)
+                                        flashElem(capElem)
+                                    end)
+                                    SearchTextBox.Text = ""
+                                    closeSearchResults()
+                                end)
+                            end
+                            break
+                        end
+                    end
+                end
+            end
+        end
+
+        if found == 0 then
+            NoResultsLabel.Visible = true
+        end
+
+        -- defer so UIListLayout computes AbsoluteContentSize after items added
+        task.defer(function()
+            local contentH = SearchResultsLayout.AbsoluteContentSize.Y + 4
+            if found == 0 then contentH = 30 end
+            local targetH = math.max(30, math.min(contentH, 150))
+            SearchResults.CanvasSize = UDim2.new(0, 0, 0, contentH)
+            SearchResults.Size = UDim2.new(0, 120, 0, targetH)
+            SearchResults.Visible = true
+            searchResultsOpen = true
+        end)
+    end
+
+
+    -- NoResults label (hidden by default)
+    NoResultsLabel = Instance.new("TextLabel", SearchResults)
+    NoResultsLabel.Name = "NoResults"
+    NoResultsLabel.Text = "  No results"
+    NoResultsLabel.Font = Enum.Font.Gotham
+    NoResultsLabel.TextColor3 = Color3.fromRGB(120, 120, 130)
+    NoResultsLabel.TextSize = 11
+    NoResultsLabel.TextXAlignment = Enum.TextXAlignment.Left
+    NoResultsLabel.BackgroundTransparency = 1
+    NoResultsLabel.BorderSizePixel = 0
+    NoResultsLabel.Size = UDim2.new(1, 0, 0, 26)
+    NoResultsLabel.ZIndex = 51
+    NoResultsLabel.Visible = false
+
+    pcall(function()
+        SearchTextBox:GetPropertyChangedSignal("Text"):Connect(function()
+            buildSearchResults(SearchTextBox.Text)
+        end)
+    end)
+
+    -- polling backup (for executors where GetPropertyChangedSignal fails)
+    local _lastTxt = ""
+    task.spawn(function()
+        while true do
+            task.wait(0.1)
+            if not SearchTextBox or not SearchTextBox.Parent then break end
+            local t = SearchTextBox.Text
+            if t ~= _lastTxt then
+                _lastTxt = t
+                pcall(buildSearchResults, t)
+            end
+        end
+    end)
+
+    SearchTextBox.FocusLost:Connect(function()
+        if SearchTextBox.Text == "" then closeSearchResults() end
+    end)
+
     -- Player footer
     local PlayerFooter = Instance.new("Frame")
     PlayerFooter.Name = "PlayerFooter"
@@ -1961,7 +2306,7 @@ function Rex:CreateWindow(config)
 
     if enableToggleBtn then
         ToggleBtn = Instance.new("Frame")
-        ToggleBtn.Name = "RexToggleButton"
+        ToggleBtn.Name = "LimboToggleButton"
         ToggleBtn.BackgroundColor3 = Color3.fromHex("#141414")
         ToggleBtn.BackgroundTransparency = 0
         ToggleBtn.BorderSizePixel = 0
@@ -1996,7 +2341,7 @@ function Rex:CreateWindow(config)
 
         local ButtonImage = Instance.new("ImageLabel")
         ButtonImage.Name = "ButtonImage"
-        ButtonImage.Image = "rbxassetid://130490621930875"
+        ButtonImage.Image = "rbxassetid://97957114633547"
         ButtonImage.BackgroundTransparency = 1
         ButtonImage.Size = UDim2.fromOffset(30, 30)
         ButtonImage.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -2390,7 +2735,7 @@ function Rex:CreateWindow(config)
 
         ButtonButton.Activated:Connect(
             function()
-                if Rex._activeDropdownClose then Rex._activeDropdownClose() end
+                if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
                 CircleClick(ButtonButton, Mouse.X, Mouse.Y)
                 if callback then
                     callback()
@@ -2604,7 +2949,7 @@ function Rex:CreateWindow(config)
 
         if elementId then
             AllElements[elementId] = toggleFunc
-            table.insert(Rex._resetCallbacks, function() toggleFunc.Set(false) end)
+            table.insert(Limbo._resetCallbacks, function() toggleFunc.Set(false) end)
         end
 
         return toggleFunc
@@ -2989,19 +3334,19 @@ function Rex:CreateWindow(config)
         local function ToggleDropdown()
             dropdownData.Open = not dropdownData.Open
             if dropdownData.Open then
-                if Rex._activeDropdownClose then Rex._activeDropdownClose() end
+                if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
 
                 DropdownList.Position = UDim2.new(0.46, 0, 0, 4)
                 DropdownList.Size = UDim2.new(0.54, -6, 1, -8)
                 DropdownList.ZIndex = 50
                 DropdownList.Visible = true
 
-                Rex._activeDropdownClose = function()
+                Limbo._activeDropdownClose = function()
                     if not dropdownData.Open then return end
                     dropdownData.Open = false
                     ResetSearch()
                     DropdownList.Visible = false
-                    Rex._activeDropdownClose = nil
+                    Limbo._activeDropdownClose = nil
                     if csConn then csConn:Disconnect(); csConn = nil end
                     local dOvr = ContentFrame:FindFirstChild("DropOverlay")
                     if dOvr then dOvr:Destroy() end
@@ -3017,11 +3362,11 @@ function Rex:CreateWindow(config)
                 overlay.AutoButtonColor = false
                 overlay.Parent = ContentFrame
                 csConn = overlay.Activated:Connect(function()
-                    if Rex._activeDropdownClose then Rex._activeDropdownClose() end
+                    if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
                 end)
             else
-                if Rex._activeDropdownClose then
-                    Rex._activeDropdownClose()
+                if Limbo._activeDropdownClose then
+                    Limbo._activeDropdownClose()
                 end
             end
         end
@@ -4185,7 +4530,7 @@ function Rex:CreateWindow(config)
 
         KeybindButton.Activated:Connect(
             function()
-                if Rex._activeDropdownClose then Rex._activeDropdownClose() end
+                if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
                 CircleClick(KeybindButton, Mouse.X, Mouse.Y)
 
                 if keybindData.Listening then
@@ -4325,7 +4670,7 @@ function Rex:CreateWindow(config)
 
             if cfg.Callback then
                 Btn.Activated:Connect(function()
-                    if Rex._activeDropdownClose then Rex._activeDropdownClose() end
+                    if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
                     CircleClick(Btn, Mouse.X, Mouse.Y)
                     cfg.Callback()
                 end)
@@ -4405,7 +4750,7 @@ function Rex:CreateWindow(config)
 
         local SL = Instance.new("TextLabel")
         SL.Font = Enum.Font.GothamBold
-        SL.Text = "Welcome to Rex Hub"
+        SL.Text = "Welcome to Limbo Hub"
         SL.TextColor3 = Color3.fromRGB(255, 255, 255)
         SL.TextTransparency = 0.6
         SL.TextSize = 12
@@ -4484,7 +4829,7 @@ function Rex:CreateWindow(config)
         end
 
         HeaderBtn.Activated:Connect(function()
-            if Rex._activeDropdownClose then Rex._activeDropdownClose() end
+            if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
             isOpen = not isOpen
             updateSize()
         end)
@@ -4614,7 +4959,7 @@ function Rex:CreateWindow(config)
         ContainerPad.Parent = TabContentContainer
 
         TabContents[tabName] = TabContentContainer
-        TabContentContainer:SetAttribute("RexTabName", tabName)
+        TabContentContainer:SetAttribute("LimboTabName", tabName)
 
         local function SwitchToTab()
             for name, container in pairs(TabContents) do
@@ -4642,7 +4987,7 @@ function Rex:CreateWindow(config)
 
         TabButton.Activated:Connect(
             function()
-                if Rex._activeDropdownClose then Rex._activeDropdownClose() end
+                if Limbo._activeDropdownClose then Limbo._activeDropdownClose() end
                 CircleClick(TabButton, Mouse.X, Mouse.Y)
                 SwitchToTab()
             end
@@ -4710,14 +5055,14 @@ function Rex:CreateWindow(config)
             end)
             if not ok then
                 MakeNotify({
-                    Title = "Rex HUB",
+                    Title = "Limbo HUB",
                     Content = "Server hop failed: " .. tostring(err),
                     Delay = 4,
                 })
             end
         else
             MakeNotify({
-                Title = "Rex HUB",
+                Title = "Limbo HUB",
                 Content = lookupError and "Could not fetch public servers." or "No available public server was found.",
                 Delay = 4,
             })
@@ -5331,8 +5676,8 @@ function Rex:CreateWindow(config)
     return Window
 end
 
-function Rex:Notify(config)
+function Limbo:Notify(config)
     MakeNotify(config)
 end
 
-return Rex
+return Limbo
