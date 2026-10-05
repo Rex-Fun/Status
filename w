@@ -223,58 +223,6 @@ local function MakeResizable(resizeHandle, targetObject, minSize, maxSize, onRes
 end
 
 
-local LUCIDE_URL = "https://raw.githubusercontent.com/Footagesus/Icons/refs/heads/main/lucide/dist/Icons.lua"
-local LucideIcons = nil
-
-local function GetLucideIcons()
-    if LucideIcons then return LucideIcons end
-    local cachePath = "LimboHUB/assets/.lucide_icons.lua"
-    pcall(function()
-        if isfile and isfile(cachePath) then
-            local src = readfile(cachePath)
-            if src and #src > 1000 then
-                local fn = loadstring(src)
-                if fn then LucideIcons = fn() end
-            end
-        end
-    end)
-    if not LucideIcons then
-        pcall(function()
-            local src = game:HttpGet(LUCIDE_URL)
-            if src and #src > 1000 then
-                if makefolder and isfolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
-                if makefolder and isfolder and not isfolder("LimboHUB/assets") then makefolder("LimboHUB/assets") end
-                if writefile then writefile(cachePath, src) end
-                local fn = loadstring(src)
-                if fn then LucideIcons = fn() end
-            end
-        end)
-    end
-    LucideIcons = LucideIcons or {}
-    return LucideIcons
-end
-
-local ICON_ALIASES = {
-    ["home"] = "house",
-    ["gear"] = "settings",
-    ["cog"] = "settings",
-    ["config"] = "settings",
-    ["configuration"] = "settings",
-    ["setting"] = "settings",
-    ["location"] = "map-pin",
-    ["teleport"] = "map-pin",
-    ["player"] = "user",
-    ["players"] = "users",
-    ["money"] = "banknote",
-    ["coin"] = "coins",
-    ["barcode"] = "scan-barcode",
-    ["qr"] = "scan-qr-code",
-    ["qrcode"] = "scan-qr-code",
-    ["scan"] = "scan-qr-code",
-    ["exit"] = "log-out",
-    ["quit"] = "x",
-    ["close"] = "x",
-}
 
 local function ResolveIcon(icon)
     if not icon or icon == "" then return nil end
@@ -1730,22 +1678,11 @@ function Limbo:CreateWindow(config)
     TabScroll.BorderColor3 = Color3.fromRGB(0, 0, 0)
     TabScroll.BorderSizePixel = 0
     TabScroll.Position = UDim2.new(0, 0, 0, 36)
-    TabScroll.Size = UDim2.new(1, 0, 1, -86)
+    TabScroll.Size = UDim2.new(1, 0, 1, -46)
     TabScroll.Name = "TabScroll"
     TabScroll.Parent = TabFrame
 
-    local TabLayout = Instance.new("UIListLayout")
-    TabLayout.Padding = UDim.new(0, 3)
-    TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    TabLayout.Parent = TabScroll
 
-    local TabTopPadding = Instance.new("UIPadding")
-    TabTopPadding.PaddingTop = UDim.new(0, 4)
-    TabTopPadding.Parent = TabScroll
-
-
-
-    -- Player footer
     local PlayerFooter = Instance.new("Frame")
     PlayerFooter.Name = "PlayerFooter"
     PlayerFooter.BackgroundTransparency = 1
@@ -2891,35 +2828,8 @@ function Limbo:CreateWindow(config)
         ListLayout.Parent = ListScroll
 
         -- ====== SEARCH INPUT ======
-        local SearchFrame = Instance.new("Frame")
-        SearchFrame.BackgroundTransparency = 1
-        SearchFrame.BorderSizePixel = 0
-        SearchFrame.Size = UDim2.new(1, 0, 0, 34)
-        SearchFrame.Position = UDim2.new(0, 0, 0, 0)
-        SearchFrame.ZIndex = 51
-        SearchFrame.Name = "SearchFrame"
-        SearchFrame.Parent = DropdownList
 
-        local SearchInput = Instance.new("TextBox")
-        SearchInput.Font = Enum.Font.Gotham
-        SearchInput.PlaceholderText = "Search..."
-        SearchInput.Text = ""
-        SearchInput.TextSize = 12
-        SearchInput.TextColor3 = Color3.fromRGB(230, 230, 230)
-        SearchInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
-        SearchInput.TextXAlignment = Enum.TextXAlignment.Center
-        SearchInput.BackgroundTransparency = 1
-        SearchInput.BorderSizePixel = 0
-        SearchInput.Size = UDim2.new(1, -16, 1, -8)
-        SearchInput.Position = UDim2.new(0, 10, 0, 4)
-        SearchInput.ZIndex = 13
-        SearchInput.ClearTextOnFocus = false
-        SearchInput.MultiLine = false
-        SearchInput.Name = "SearchInput"
-        SearchInput.Parent = SearchFrame
 
-        local function ResetSearch()
-            SearchInput.Text = ""
             for _, child in ListScroll:GetChildren() do
                 if child:IsA("Frame") and child.Name == "Option" then
                     child.Visible = true
@@ -2927,8 +2837,6 @@ function Limbo:CreateWindow(config)
             end
         end
 
-        SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
-            local query = SearchInput.Text:lower()
             local totalH = 0
             for _, child in ListScroll:GetChildren() do
                 if child:IsA("Frame") and child.Name == "Option" then
@@ -3001,7 +2909,6 @@ function Limbo:CreateWindow(config)
                 Limbo._activeDropdownClose = function()
                     if not dropdownData.Open then return end
                     dropdownData.Open = false
-                    ResetSearch()
                     DropdownList.Visible = false
                     Limbo._activeDropdownClose = nil
                     if csConn then csConn:Disconnect(); csConn = nil end
@@ -4493,6 +4400,22 @@ function Limbo:CreateWindow(config)
 
 
 
+        local rawName = (tabContainer and tabContainer.Name) or ""
+        local tabName = rawName ~= "" and rawName:gsub("Content$", "") or nil
+        if tabName and title and title ~= "" then
+            local secTitle = (title or ""):gsub("^%s+", "")
+                title   = secTitle,
+                tabName = tabName,
+                secFrame = SectionFrame,
+                openFn  = function()
+                    if not isOpen then
+                        isOpen = true
+                        updateSize()
+                    end
+                end,
+            })
+        end
+
         updateSize()
         return InnerContainer
     end
@@ -4717,7 +4640,6 @@ function Limbo:CreateWindow(config)
     end)
 
     CreateButton(UtilSection, "Server Hop", "Teleport to server with fewest players", "mouse-pointer-click", function()
-        MakeNotify({ Title = "Server Hop", Description = "Searching", Content = "Searching for lowest player server...", Delay = 2.5 })
         doServerHop()
     end)
 
