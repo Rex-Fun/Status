@@ -223,6 +223,58 @@ local function MakeResizable(resizeHandle, targetObject, minSize, maxSize, onRes
 end
 
 
+local LUCIDE_URL = "https://raw.githubusercontent.com/Footagesus/Icons/refs/heads/main/lucide/dist/Icons.lua"
+local LucideIcons = nil
+
+local function GetLucideIcons()
+    if LucideIcons then return LucideIcons end
+    local cachePath = "LimboHUB/assets/.lucide_icons.lua"
+    pcall(function()
+        if isfile and isfile(cachePath) then
+            local src = readfile(cachePath)
+            if src and #src > 1000 then
+                local fn = loadstring(src)
+                if fn then LucideIcons = fn() end
+            end
+        end
+    end)
+    if not LucideIcons then
+        pcall(function()
+            local src = game:HttpGet(LUCIDE_URL)
+            if src and #src > 1000 then
+                if makefolder and isfolder and not isfolder("LimboHUB") then makefolder("LimboHUB") end
+                if makefolder and isfolder and not isfolder("LimboHUB/assets") then makefolder("LimboHUB/assets") end
+                if writefile then writefile(cachePath, src) end
+                local fn = loadstring(src)
+                if fn then LucideIcons = fn() end
+            end
+        end)
+    end
+    LucideIcons = LucideIcons or {}
+    return LucideIcons
+end
+
+local ICON_ALIASES = {
+    ["home"] = "house",
+    ["gear"] = "settings",
+    ["cog"] = "settings",
+    ["config"] = "settings",
+    ["configuration"] = "settings",
+    ["setting"] = "settings",
+    ["location"] = "map-pin",
+    ["teleport"] = "map-pin",
+    ["player"] = "user",
+    ["players"] = "users",
+    ["money"] = "banknote",
+    ["coin"] = "coins",
+    ["barcode"] = "scan-barcode",
+    ["qr"] = "scan-qr-code",
+    ["qrcode"] = "scan-qr-code",
+    ["scan"] = "scan-qr-code",
+    ["exit"] = "log-out",
+    ["quit"] = "x",
+    ["close"] = "x",
+}
 
 local function ResolveIcon(icon)
     if not icon or icon == "" then return nil end
@@ -1678,11 +1730,365 @@ function Limbo:CreateWindow(config)
     TabScroll.BorderColor3 = Color3.fromRGB(0, 0, 0)
     TabScroll.BorderSizePixel = 0
     TabScroll.Position = UDim2.new(0, 0, 0, 36)
-    TabScroll.Size = UDim2.new(1, 0, 1, -46)
+    TabScroll.Size = UDim2.new(1, 0, 1, -86)
     TabScroll.Name = "TabScroll"
     TabScroll.Parent = TabFrame
 
+    local TabLayout = Instance.new("UIListLayout")
+    TabLayout.Padding = UDim.new(0, 3)
+    TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    TabLayout.Parent = TabScroll
 
+    local TabTopPadding = Instance.new("UIPadding")
+    TabTopPadding.PaddingTop = UDim.new(0, 4)
+    TabTopPadding.Parent = TabScroll
+
+    -- Search bar
+    local SearchBar = Instance.new("Frame")
+    SearchBar.Name = "SearchBar"
+    SearchBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SearchBar.BackgroundTransparency = 0.93
+    SearchBar.BorderSizePixel = 0
+    SearchBar.Position = UDim2.new(0, 0, 0, 6)
+    SearchBar.Size = UDim2.new(1, 0, 0, 30)
+    SearchBar.ZIndex = 20
+    SearchBar.Active = true
+    SearchBar.Parent = TabFrame
+
+    local SearchBarCorner = Instance.new("UICorner")
+    SearchBarCorner.CornerRadius = UDim.new(0, 4)
+    SearchBarCorner.Parent = SearchBar
+
+    local SearchIcon = Instance.new("ImageLabel")
+    SearchIcon.Image = ResolveIcon("scan-qr-code") or "rbxassetid://105409149549927"
+    SearchIcon.ImageColor3 = Color3.fromHex("#B5B5B5")
+    SearchIcon.BackgroundTransparency = 1
+    SearchIcon.Position = UDim2.new(0, 8, 0.5, 0)
+    SearchIcon.AnchorPoint = Vector2.new(0, 0.5)
+    SearchIcon.Size = UDim2.new(0, 14, 0, 14)
+    SearchIcon.ZIndex = 22
+    SearchIcon.Parent = SearchBar
+
+    local SearchTextBox = Instance.new("TextBox")
+    SearchTextBox.Font = Enum.Font.Gotham
+    SearchTextBox.PlaceholderText = "Search Features..."
+    SearchTextBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 110)
+    SearchTextBox.Text = ""
+    SearchTextBox.TextColor3 = Color3.fromRGB(230, 230, 230)
+    SearchTextBox.TextSize = 11
+    SearchTextBox.TextXAlignment = Enum.TextXAlignment.Left
+    SearchTextBox.BackgroundTransparency = 1
+    SearchTextBox.BorderSizePixel = 0
+    SearchTextBox.Position = UDim2.new(0, 28, 0, 0)
+    SearchTextBox.Size = UDim2.new(1, -32, 1, 0)
+    SearchTextBox.ClearTextOnFocus = false
+    SearchTextBox.ZIndex = 21
+    SearchTextBox.Parent = SearchBar
+
+    local SearchResults = Instance.new("ScrollingFrame")
+    local SearchResultsLayout = nil  -- forward, assigned below
+    SearchResults.Name = "SearchResults"
+    SearchResults.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    SearchResults.BorderSizePixel = 0
+    SearchResults.Position = UDim2.new(0, 9, 0, 75)
+    SearchResults.Size = UDim2.new(0, 120, 0, 0)
+    SearchResults.ScrollBarThickness = 2
+    SearchResults.ScrollBarImageColor3 = Color3.fromRGB(150, 150, 170)
+    SearchResults.ClipsDescendants = true
+    SearchResults.ZIndex = 50
+    SearchResults.Visible = false
+    SearchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
+    SearchResults.Parent = Main
+
+    local SearchResultsCorner = Instance.new("UICorner")
+    SearchResultsCorner.CornerRadius = UDim.new(0, 4)
+    SearchResultsCorner.Parent = SearchResults
+
+    SearchResultsLayout = Instance.new("UIListLayout")
+    SearchResultsLayout.Padding = UDim.new(0, 2)
+    SearchResultsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    SearchResultsLayout.Parent = SearchResults
+
+    SearchResultsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        SearchResults.CanvasSize = UDim2.new(0, 0, 0, SearchResultsLayout.AbsoluteContentSize.Y + 4)
+    end)
+
+    local searchResultsOpen = false
+    local NoResultsLabel = nil
+    local SearchSections = {}
+    local TabContents = {}
+    local TabSwitchFns = {}
+    local ContentScroll = nil
+    -- helper: sum Size.Y.Offset of children above stopAt (reliable, no render needed)
+    local function sumChildH(container, stopAt)
+        local y = 0
+        for _, ch in ipairs(container:GetChildren()) do
+            if ch == stopAt then break end
+            if ch:IsA("Frame") then y = y + ch.Size.Y.Offset + 8 end
+        end
+        return y
+    end
+
+    local function flashElem(elem)
+        task.spawn(function()
+            local s = Instance.new("UIStroke")
+            s.Color = Color3.fromRGB(180, 180, 210)
+            s.Thickness = 2.5
+            s.Transparency = 0
+            s.Parent = elem
+            task.wait(0.8)
+            if s and s.Parent then s:Destroy() end
+        end)
+    end
+
+    local function closeSearchResults()
+        searchResultsOpen = false
+        SearchResults.Visible = false
+        for _, child in ipairs(SearchResults:GetChildren()) do
+            if child:IsA("TextButton") then child:Destroy() end
+        end
+        if NoResultsLabel then NoResultsLabel.Visible = false end
+    end
+
+    local function buildSearchResults(query)
+        if not NoResultsLabel then return end
+        -- fresh destroy old buttons
+        for _, child in ipairs(SearchResults:GetChildren()) do
+            if child:IsA("TextButton") then child:Destroy() end
+        end
+        NoResultsLabel.Visible = false
+
+        if query == "" then
+            closeSearchResults()
+            return
+        end
+
+        local q = string.lower(query)
+        local found = 0
+
+        for _, sec in ipairs(SearchSections) do
+            pcall(function()
+                local inner = sec.secFrame and sec.secFrame:FindFirstChild("InnerContainer")
+                if not inner then return end
+                for _, elem in ipairs(inner:GetChildren()) do
+                    for _, lname in ipairs({"ToggleTitle","ButtonTitle","InputTitle","DropdownTitle","SliderTitle","ParagraphTitle"}) do
+                        local lbl = elem:FindFirstChild(lname)
+                        if lbl and lbl.Text and lbl.Text ~= "" then
+                            if string.find(string.lower(lbl.Text), q, 1, true) then
+                                found = found + 1
+                                local displayText = lbl.Text
+                                local subtitleText = (sec.tabName or "") .. " \xE2\x80\xA2 " .. (sec.title or "")
+                                local capSec = sec
+                                local capElem = elem
+
+                                local Item = Instance.new("TextButton", SearchResults)
+                                Item.Font = Enum.Font.GothamBold
+                                Item.Text = ""
+                                Item.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                                Item.BackgroundTransparency = 0.92
+                                Item.BorderSizePixel = 0
+                                Item.Size = UDim2.new(1, 0, 0, 40)
+                                Item.ZIndex = 51
+                                Item.AutoButtonColor = true
+                                Item.Visible = true
+                                Instance.new("UICorner", Item).CornerRadius = UDim.new(0, 3)
+
+                                -- pill indicator left
+                                local Pill = Instance.new("Frame", Item)
+                                Pill.BackgroundColor3 = Color3.fromRGB(150, 150, 170)
+                                Pill.BorderSizePixel = 0
+                                Pill.Position = UDim2.new(0, 0, 0.1, 0)
+                                Pill.Size = UDim2.new(0, 2, 0.8, 0)
+                                Pill.ZIndex = 52
+                                Instance.new("UICorner", Pill).CornerRadius = UDim.new(1, 0)
+
+                                -- main text
+                                local MainLabel = Instance.new("TextLabel", Item)
+                                MainLabel.Font = Enum.Font.GothamBold
+                                MainLabel.Text = displayText
+                                MainLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+                                MainLabel.TextSize = 13
+                                MainLabel.TextXAlignment = Enum.TextXAlignment.Left
+                                MainLabel.TextTruncate = Enum.TextTruncate.AtEnd
+                                MainLabel.BackgroundTransparency = 1
+                                MainLabel.BorderSizePixel = 0
+                                MainLabel.Position = UDim2.new(0, 8, 0, 4)
+                                MainLabel.Size = UDim2.new(1, -10, 0, 16)
+                                MainLabel.ZIndex = 52
+
+                                -- subtitle
+                                local SubLabel = Instance.new("TextLabel", Item)
+                                SubLabel.Font = Enum.Font.Gotham
+                                SubLabel.Text = subtitleText
+                                SubLabel.TextColor3 = Color3.fromRGB(120, 120, 140)
+                                SubLabel.TextSize = 9
+                                SubLabel.TextXAlignment = Enum.TextXAlignment.Left
+                                SubLabel.TextTruncate = Enum.TextTruncate.AtEnd
+                                SubLabel.BackgroundTransparency = 1
+                                SubLabel.BorderSizePixel = 0
+                                SubLabel.Position = UDim2.new(0, 8, 0, 22)
+                                SubLabel.Size = UDim2.new(1, -10, 0, 12)
+                                SubLabel.ZIndex = 52
+
+                                Item.MouseButton1Click:Connect(function()
+                                    task.spawn(function()
+                                        local sf = TabSwitchFns[capSec.tabName]
+                                        if sf then pcall(sf) end
+                                        pcall(capSec.openFn)
+                                        task.wait(0.2)
+                                        -- reliable scroll: sum child heights
+                                        local cont = TabContents[capSec.tabName]
+                                        local inner3 = capSec.secFrame and capSec.secFrame:FindFirstChild("InnerContainer")
+                                        local secOffset = cont and sumChildH(cont, capSec.secFrame) or 0
+                                        local elemOffset = inner3 and sumChildH(inner3, capElem) or 0
+                                        local scrollTo = secOffset + 34 + elemOffset
+                                        ContentScroll.CanvasPosition = Vector2.new(0, scrollTo)
+                                        flashElem(capElem)
+                                    end)
+                                    SearchTextBox.Text = ""
+                                    closeSearchResults()
+                                end)
+                            end
+                            break
+                        end
+                    end
+                end
+            end)
+        end
+
+        -- second pass: scan elements directly in tabs (outside collapsibles)
+        for tabName, container in pairs(TabContents or {}) do
+            for _, elem in ipairs(container:GetChildren()) do
+                if elem.Name ~= "Collapsible" then
+                    for _, lname in ipairs({"ToggleTitle","ButtonTitle","InputTitle","DropdownTitle","SliderTitle","ParagraphTitle"}) do
+                        local lbl = elem:FindFirstChild(lname)
+                        if lbl and lbl.Text and lbl.Text ~= "" then
+                            if string.find(string.lower(lbl.Text), q, 1, true) then
+                                found = found + 1
+                                local displayText = lbl.Text
+                                local subtitleText = tabName .. " \xE2\x80\xA2 " .. tabName
+                                local capTab = tabName
+                                local capElem = elem
+
+                                local Item = Instance.new("TextButton", SearchResults)
+                                Item.Font = Enum.Font.GothamBold
+                                Item.Text = ""
+                                Item.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                                Item.BackgroundTransparency = 0.92
+                                Item.BorderSizePixel = 0
+                                Item.Size = UDim2.new(1, 0, 0, 40)
+                                Item.ZIndex = 51
+                                Item.AutoButtonColor = true
+                                Item.Visible = true
+                                Instance.new("UICorner", Item).CornerRadius = UDim.new(0, 3)
+                                local Pill2 = Instance.new("Frame", Item)
+                                Pill2.BackgroundColor3 = Color3.fromRGB(150, 150, 170)
+                                Pill2.BorderSizePixel = 0
+                                Pill2.Position = UDim2.new(0, 0, 0.1, 0)
+                                Pill2.Size = UDim2.new(0, 2, 0.8, 0)
+                                Pill2.ZIndex = 52
+                                Instance.new("UICorner", Pill2).CornerRadius = UDim.new(1, 0)
+                                local ML2 = Instance.new("TextLabel", Item)
+                                ML2.Font = Enum.Font.GothamBold
+                                ML2.Text = displayText
+                                ML2.TextColor3 = Color3.fromRGB(220, 220, 220)
+                                ML2.TextSize = 13
+                                ML2.TextXAlignment = Enum.TextXAlignment.Left
+                                ML2.TextTruncate = Enum.TextTruncate.AtEnd
+                                ML2.BackgroundTransparency = 1
+                                ML2.BorderSizePixel = 0
+                                ML2.Position = UDim2.new(0, 8, 0, 4)
+                                ML2.Size = UDim2.new(1, -10, 0, 16)
+                                ML2.ZIndex = 52
+                                local SL2 = Instance.new("TextLabel", Item)
+                                SL2.Font = Enum.Font.Gotham
+                                SL2.Text = subtitleText
+                                SL2.TextColor3 = Color3.fromRGB(120, 120, 140)
+                                SL2.TextSize = 9
+                                SL2.TextXAlignment = Enum.TextXAlignment.Left
+                                SL2.TextTruncate = Enum.TextTruncate.AtEnd
+                                SL2.BackgroundTransparency = 1
+                                SL2.BorderSizePixel = 0
+                                SL2.Position = UDim2.new(0, 8, 0, 22)
+                                SL2.Size = UDim2.new(1, -10, 0, 12)
+                                SL2.ZIndex = 52
+                                Item.MouseButton1Click:Connect(function()
+                                    task.spawn(function()
+                                        local sf = TabSwitchFns[capTab]
+                                        if sf then pcall(sf) end
+                                        task.wait(0.2)
+                                        local cont = TabContents[capTab]
+                                        local scrollTo = cont and sumChildH(cont, capElem) or 0
+                                        ContentScroll.CanvasPosition = Vector2.new(0, scrollTo)
+                                        flashElem(capElem)
+                                    end)
+                                    SearchTextBox.Text = ""
+                                    closeSearchResults()
+                                end)
+                            end
+                            break
+                        end
+                    end
+                end
+            end
+        end
+
+        if found == 0 then
+            NoResultsLabel.Visible = true
+        end
+
+        -- defer so UIListLayout computes AbsoluteContentSize after items added
+        task.defer(function()
+            local contentH = SearchResultsLayout.AbsoluteContentSize.Y + 4
+            if found == 0 then contentH = 30 end
+            local targetH = math.max(30, math.min(contentH, 150))
+            SearchResults.CanvasSize = UDim2.new(0, 0, 0, contentH)
+            SearchResults.Size = UDim2.new(0, 120, 0, targetH)
+            SearchResults.Visible = true
+            searchResultsOpen = true
+        end)
+    end
+
+
+    -- NoResults label (hidden by default)
+    NoResultsLabel = Instance.new("TextLabel", SearchResults)
+    NoResultsLabel.Name = "NoResults"
+    NoResultsLabel.Text = "  No results"
+    NoResultsLabel.Font = Enum.Font.Gotham
+    NoResultsLabel.TextColor3 = Color3.fromRGB(120, 120, 130)
+    NoResultsLabel.TextSize = 11
+    NoResultsLabel.TextXAlignment = Enum.TextXAlignment.Left
+    NoResultsLabel.BackgroundTransparency = 1
+    NoResultsLabel.BorderSizePixel = 0
+    NoResultsLabel.Size = UDim2.new(1, 0, 0, 26)
+    NoResultsLabel.ZIndex = 51
+    NoResultsLabel.Visible = false
+
+    pcall(function()
+        SearchTextBox:GetPropertyChangedSignal("Text"):Connect(function()
+            buildSearchResults(SearchTextBox.Text)
+        end)
+    end)
+
+    -- polling backup (for executors where GetPropertyChangedSignal fails)
+    local _lastTxt = ""
+    task.spawn(function()
+        while true do
+            task.wait(0.1)
+            if not SearchTextBox or not SearchTextBox.Parent then break end
+            local t = SearchTextBox.Text
+            if t ~= _lastTxt then
+                _lastTxt = t
+                pcall(buildSearchResults, t)
+            end
+        end
+    end)
+
+    SearchTextBox.FocusLost:Connect(function()
+        if SearchTextBox.Text == "" then closeSearchResults() end
+    end)
+
+    -- Player footer
     local PlayerFooter = Instance.new("Frame")
     PlayerFooter.Name = "PlayerFooter"
     PlayerFooter.BackgroundTransparency = 1
@@ -2828,8 +3234,35 @@ function Limbo:CreateWindow(config)
         ListLayout.Parent = ListScroll
 
         -- ====== SEARCH INPUT ======
+        local SearchFrame = Instance.new("Frame")
+        SearchFrame.BackgroundTransparency = 1
+        SearchFrame.BorderSizePixel = 0
+        SearchFrame.Size = UDim2.new(1, 0, 0, 34)
+        SearchFrame.Position = UDim2.new(0, 0, 0, 0)
+        SearchFrame.ZIndex = 51
+        SearchFrame.Name = "SearchFrame"
+        SearchFrame.Parent = DropdownList
 
+        local SearchInput = Instance.new("TextBox")
+        SearchInput.Font = Enum.Font.Gotham
+        SearchInput.PlaceholderText = "Search..."
+        SearchInput.Text = ""
+        SearchInput.TextSize = 12
+        SearchInput.TextColor3 = Color3.fromRGB(230, 230, 230)
+        SearchInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+        SearchInput.TextXAlignment = Enum.TextXAlignment.Center
+        SearchInput.BackgroundTransparency = 1
+        SearchInput.BorderSizePixel = 0
+        SearchInput.Size = UDim2.new(1, -16, 1, -8)
+        SearchInput.Position = UDim2.new(0, 10, 0, 4)
+        SearchInput.ZIndex = 13
+        SearchInput.ClearTextOnFocus = false
+        SearchInput.MultiLine = false
+        SearchInput.Name = "SearchInput"
+        SearchInput.Parent = SearchFrame
 
+        local function ResetSearch()
+            SearchInput.Text = ""
             for _, child in ListScroll:GetChildren() do
                 if child:IsA("Frame") and child.Name == "Option" then
                     child.Visible = true
@@ -2837,6 +3270,8 @@ function Limbo:CreateWindow(config)
             end
         end
 
+        SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
+            local query = SearchInput.Text:lower()
             local totalH = 0
             for _, child in ListScroll:GetChildren() do
                 if child:IsA("Frame") and child.Name == "Option" then
@@ -2909,6 +3344,7 @@ function Limbo:CreateWindow(config)
                 Limbo._activeDropdownClose = function()
                     if not dropdownData.Open then return end
                     dropdownData.Open = false
+                    ResetSearch()
                     DropdownList.Visible = false
                     Limbo._activeDropdownClose = nil
                     if csConn then csConn:Disconnect(); csConn = nil end
@@ -4400,10 +4836,12 @@ function Limbo:CreateWindow(config)
 
 
 
+        -- register in SearchSections for live search
         local rawName = (tabContainer and tabContainer.Name) or ""
         local tabName = rawName ~= "" and rawName:gsub("Content$", "") or nil
         if tabName and title and title ~= "" then
             local secTitle = (title or ""):gsub("^%s+", "")
+            table.insert(SearchSections, {
                 title   = secTitle,
                 tabName = tabName,
                 secFrame = SectionFrame,
@@ -4640,6 +5078,7 @@ function Limbo:CreateWindow(config)
     end)
 
     CreateButton(UtilSection, "Server Hop", "Teleport to server with fewest players", "mouse-pointer-click", function()
+        MakeNotify({ Title = "Server Hop", Description = "Searching", Content = "Searching for lowest player server...", Delay = 2.5 })
         doServerHop()
     end)
 
