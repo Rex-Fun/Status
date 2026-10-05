@@ -1754,6 +1754,8 @@ function Limbo:CreateWindow(config)
     SearchBar.ZIndex = 20
     SearchBar.Active = true
     SearchBar.Parent = TabFrame
+    SearchBar.Visible = false
+    SearchBar.Size = UDim2.new(0, 0, 0, 0)
 
     local SearchBarCorner = Instance.new("UICorner")
     SearchBarCorner.CornerRadius = UDim.new(0, 4)
