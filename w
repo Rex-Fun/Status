@@ -1760,7 +1760,7 @@ function Limbo:CreateWindow(config)
     SearchBarCorner.Parent = SearchBar
 
     local SearchIcon = Instance.new("ImageLabel")
-    SearchIcon.Image = ResolveIcon("scan-qr-code") or "rbxassetid://105409149549927"
+    -- SearchIcon.Image = ResolveIcon("scan-qr-code") or "rbxassetid://105409149549927"
     SearchIcon.ImageColor3 = Color3.fromHex("#B5B5B5")
     SearchIcon.BackgroundTransparency = 1
     SearchIcon.Position = UDim2.new(0, 8, 0.5, 0)
@@ -1771,7 +1771,7 @@ function Limbo:CreateWindow(config)
 
     local SearchTextBox = Instance.new("TextBox")
     SearchTextBox.Font = Enum.Font.Gotham
-    SearchTextBox.PlaceholderText = "Search Features..."
+    SearchTextBox.PlaceholderText = "Search ..."
     SearchTextBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 110)
     SearchTextBox.Text = ""
     SearchTextBox.TextColor3 = Color3.fromRGB(230, 230, 230)
