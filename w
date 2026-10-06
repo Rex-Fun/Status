@@ -258,8 +258,8 @@ local ICON_ALIASES = {
     ["home"] = "house",
     ["gear"] = "settings",
     ["cog"] = "settings",
-    ["config"] = "settings",
-    ["configuration"] = "settings",
+    [""] = "settings",
+    ["uration"] = "settings",
     ["setting"] = "settings",
     ["location"] = "map-pin",
     ["teleport"] = "map-pin",
@@ -4996,7 +4996,7 @@ function Limbo:CreateWindow(config)
         return TabContentContainer, SwitchToTab
     end
     
-    local ConfigTabContainer, SwitchToConfigTab = CreateTabButton("Configuration", "settings", true)
+    local ConfigTabContainer, SwitchToConfigTab = CreateTabButton("settings", "settings", true)
     
     -- Helper Utilities (Rejoin & Server Hop)
     local function doRejoin()
@@ -5082,11 +5082,11 @@ function Limbo:CreateWindow(config)
         doServerHop()
     end)
 
-    -- Section 2 (Kedua): Configuration
+    -- Section 2 (Kedua): settings
     local CurrentConfigName = ""
     local SelectedConfigName = ""
     local AutoloadFile = ConfigFolder .. "/Autoload.txt"
-    local CfgSection = CreateCollapsible(ConfigTabContainer, "Configuration", true)
+    local CfgSection = CreateCollapsible(ConfigTabContainer, "settings", true)
 
     -- Status header frame with gear icon + two-line status
     local CfgHeaderFrame = Instance.new("Frame", CfgSection)
