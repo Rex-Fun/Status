@@ -259,7 +259,7 @@ local ICON_ALIASES = {
     ["gear"] = "settings",
     ["cog"] = "settings",
     ["config"] = "settings",
-    ["settings"] = "settings",
+    ["configuration"] = "settings",
     ["setting"] = "settings",
     ["location"] = "map-pin",
     ["teleport"] = "map-pin",
@@ -4996,7 +4996,7 @@ function Limbo:CreateWindow(config)
         return TabContentContainer, SwitchToTab
     end
     
-    local ConfigTabContainer, SwitchToConfigTab = CreateTabButton("Configuration", "settings", true)
+    local ConfigTabContainer, SwitchToConfigTab = CreateTabButton("setting", "settings", true)
     
     -- Helper Utilities (Rejoin & Server Hop)
     local function doRejoin()
