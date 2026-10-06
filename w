@@ -783,7 +783,7 @@ local function MakeNotify(NotifyConfig)
             TopLayout.Padding = UDim.new(0, 6)
             TopLayout.Parent = Top
 
-            local notifyIconUrl = ResolveIcon(NotifyConfig.Icon or "rbxassetid://97957114633547")
+            -- local notifyIconUrl = ResolveIcon(NotifyConfig.Icon or "rbxassetid://97957114633547")
             if notifyIconUrl then
                 local NIcon = Instance.new("ImageLabel")
                 NIcon.Image = notifyIconUrl
@@ -1081,7 +1081,7 @@ local function setupKeySystemModal(ksConfig, screenGui, dropShadowHolder, onComp
     TopLayout.Parent = TopRow
 
     local Logo = Instance.new("ImageLabel")
-    Logo.Image = "rbxassetid://97957114633547"
+    -- Logo.Image = "rbxassetid://97957114633547"
     Logo.Size = UDim2.fromOffset(20, 20)
     Logo.BackgroundTransparency = 1
     Logo.Parent = TopRow
@@ -1215,7 +1215,7 @@ function Limbo:CreateWindow(config)
     local MinimizeButton = config.MinimizeButton or false
     local MinimizeButtonImage = config.MinimizeButton_Image or "rbxassetid://16932740082"
     local Badges = config.Badges or {}
-    local Icon = ResolveIcon(config.Icon or "rbxassetid://97957114633547")
+    -- local Icon = ResolveIcon(config.Icon or "rbxassetid://97957114633547")
     local TitleImage = config.TitleImage or ""
     local Version = config.Version or ("v" .. LIB_VERSION)
     local ShowExecutor = config.ShowExecutor ~= false
@@ -1325,7 +1325,7 @@ function Limbo:CreateWindow(config)
     -- No UIStroke on Main squircle image to avoid rectangular black outer corners
 
     -- Background image (customizable, shown only on selected theme)
-    local BgImageId    = config.BackgroundImage       or "rbxassetid://97957114633547"
+    -- local BgImageId    = config.BackgroundImage       or "rbxassetid://97957114633547"
     local BgImageTheme = config.BackgroundImage_Theme or "Darker"
 
     local ImageWrapper = Instance.new("Frame")
@@ -2341,7 +2341,7 @@ function Limbo:CreateWindow(config)
 
         local ButtonImage = Instance.new("ImageLabel")
         ButtonImage.Name = "ButtonImage"
-        ButtonImage.Image = "rbxassetid://97957114633547"
+        -- ButtonImage.Image = "rbxassetid://97957114633547"
         ButtonImage.BackgroundTransparency = 1
         ButtonImage.Size = UDim2.fromOffset(30, 30)
         ButtonImage.AnchorPoint = Vector2.new(0.5, 0.5)
